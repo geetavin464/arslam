@@ -1,0 +1,44 @@
+#ifndef FRAME_READER_H
+#define FRAME_READER_H
+#include<highgui.h>
+#include<vector>
+
+
+class FrameReader
+{
+private:
+	cv::Ptr<CvCapture> inDevice_;
+	std::vector<IplImage> buffer_;
+	std::vector<IplImage>::iterator bufPtr_;
+	int bufSize_;
+
+public:
+	FrameReader()
+	{
+		inDevice_ = NULL;
+		bufSize_ = 0;
+	}
+	FrameReader(CvCapture* dev, int nFrames=5)
+	{
+		inDevice_ = dev;
+		bufSize_ = nFrames;
+		buffer_.reserve(bufSize_);
+		bufPtr_ = buffer_.begin();
+		
+		CvSize s;
+		s.width = (int)cvGetCaptureProperty(inDevice_,CV_CAP_PROP_FRAME_WIDTH);
+		s.height = (int)cvGetCaptureProperty(inDevice_,CV_CAP_PROP_FRAME_HEIGHT);
+		//allocating memory for image buffer
+		//for(int buf_i = 0;buf_i<bufSize_;++buf_i)
+		//	buffer_[buf_i] = cvCreateImage(s,IPL_DEPTH_8U,3); // color images from the camera
+	}
+
+	~FrameReader()
+	{
+		//buffer_.clear();
+	}
+	void readFrame();
+	IplImage* getLastFrame();
+};
+
+#endif // FRAME_READER_H

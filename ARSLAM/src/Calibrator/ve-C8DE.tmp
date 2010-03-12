@@ -1,0 +1,60 @@
+#include"Calibrator/CameraCalibrator.h"
+#include<exception>
+#include<conio.h>
+
+const cv::Mat& CameraCalibrator::getIntrinsicMatrix()
+{
+	return intrinsic_matrix;
+}
+
+const cv::Mat& CameraCalibrator::getRotationMatrix()
+{
+	return rotation_vector;
+}
+
+const cv::Mat& CameraCalibrator::getTranslationVector()
+{
+	return translation_vector;
+}
+
+void CameraCalibrator::calibrate(int bw, int bh, int ni)
+{
+	cv::Size pattSize = cv::Size(bh,bw);
+	
+	int success = 0;
+	std::vector<cv::Point2f> corners;
+	bool found = 0;
+	// go on with the calibration
+	while(success<nViews)
+	{
+		cv::Mat img;
+		std::string str1 = "Video Capture";
+		std::string str2 = "ChessBoard";
+		
+		cv::namedWindow(str1,0);
+		cv::namedWindow(str2,0);
+
+		try
+		{
+			// here we call fr_->readFrame; later we'll be capturing images at regular intervals, then this won't be required
+			fr_->readFrame();
+			img = fr_->getLastFrame();
+			cv::imshow(str1,img);
+		}
+		catch (cv::Exception& e)
+		{
+		}
+		
+		found = findChessboardCorners(img,pattSize,corners); // finds approx corners in image
+		if(!found)
+			continue;
+		// finds accurately the corners
+		cv::cornerSubPix(img,corners,cv::Size(3,3),cv::Size(-1,-1),
+			cv::TermCriteria(cv::TermCriteria::MAX_ITER+cv::TermCriteria::EPS,30,0.01));//specifies the termination criteria
+
+		cv::drawChessboardCorners(img,pattSize,corners,found);
+		cv::imshow(str2,img);
+		getch();
+		success++;
+	}
+}
