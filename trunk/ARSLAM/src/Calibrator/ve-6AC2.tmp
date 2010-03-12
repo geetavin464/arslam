@@ -1,0 +1,95 @@
+#include"Calibrator/CameraCalibrator.h"
+#include<exception>
+
+const cv::Mat& CameraCalibrator::getIntrinsicMatrix()
+{
+	return intrinsic_matrix;
+}
+
+const cv::Mat& CameraCalibrator::getRotationMatrix()
+{
+	return rotation_vector;
+}
+
+const cv::Mat& CameraCalibrator::getTranslationVector()
+{
+	return translation_vector;
+}
+
+void CameraCalibrator::calibrate(int bw, int bh, int ni)
+{
+	cv::Size pattSize = cv::Size(bh,bw);
+	
+	int success = 0;
+	vector<Point2f> corners;
+	bool found = 0;
+	// go on with the calibration
+	while(success<nViews)
+	{
+		cv::Mat img;
+		try
+		{
+			fr_->readFrame();
+			img = *(fr_->getLastFrame());
+		}
+		catch (std::exception& e)
+		{
+		}
+		
+		found = findChessboardCorners(img,pattSize,corners);
+			
+
+
+	}
+		//	{
+		//
+		//		if(frame++ % board_dt == 0) 
+		//		{
+		//
+		//			int found = cvFindChessboardCorners(
+		//				image, board_sz, corners, &corner_count,
+		//				CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS
+		//				);
+		//
+		//			cvCvtColor(image, gray_image, CV_BGR2GRAY);
+		//			cvFindCornerSubPix(gray_image, corners, corner_count,
+		//				cvSize(11,11),cvSize(-1,-1), cvTermCriteria(
+		//				CV_TERMCRIT_EPS+CV_TERMCRIT_ITER, 30, 0.1 ));
+		//
+		//			cvDrawChessboardCorners(image, board_sz, corners,
+		//				corner_count, found);
+		//			cvShowImage( "Calibration", image );
+		//
+		//			if( corner_count == board_n ) 
+		//			{
+		//				step = successes*board_n;
+		//				for( int i=step, j=0; j<board_n; ++i,++j ) 
+		//				{
+		//					CV_MAT_ELEM(*image_points, float,i,0) = corners[j].x;
+		//					CV_MAT_ELEM(*image_points, float,i,1) = corners[j].y;
+		//					CV_MAT_ELEM(*object_points,float,i,0) = j/board_w;
+		//					CV_MAT_ELEM(*object_points,float,i,1) = j%board_w;
+		//					CV_MAT_ELEM(*object_points,float,i,2) = 0.0f;
+		//				}
+		//				CV_MAT_ELEM(*point_counts, int,successes,0) = board_n;
+		//				successes++;
+		//			}
+		//		}
+		//		int c = cvWaitKey(15);
+		//		if(c == 'p')
+		//		{
+		//			c = 0;
+		//			while(c != 'p' && c != 27)
+		//			{
+		//				c = cvWaitKey(250);
+		//			}
+		//		}
+		//		if(c == 27) // user hit Esc
+		//			return 0;
+		//		image = cvQueryFrame( capture ); 
+		//	}
+
+
+
+
+}
