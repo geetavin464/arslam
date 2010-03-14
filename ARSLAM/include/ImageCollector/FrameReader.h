@@ -1,44 +1,48 @@
 #ifndef FRAME_READER_H
 #define FRAME_READER_H
 #include<highgui.h>
-#include<vector>
+#include<list>
 
 
 class FrameReader
 {
 public:
-	typedef std::vector<IplImage*> ImBuffer;
+	typedef std::list<cv::Mat> ImBuffer;
 private:
-	cv::Ptr<CvCapture> inDevice_;
+	cv::VideoCapture inDevice_;
 	ImBuffer buffer_;
 	ImBuffer::iterator bufPtr_;
-	int bufSize_;
+	size_t bufSize_;
+	int* temp_;
 	
 public:
 	FrameReader()
 	{
-		inDevice_ = NULL;
 		bufSize_ = 0;
 	}
-	FrameReader(cv::Ptr<CvCapture> dev, int nFrames=5)
+	FrameReader(cv::VideoCapture& dev, int nFrames=5):
+		inDevice_(dev),
+		bufSize_(nFrames)	
 	{
-		inDevice_ = dev;
-		bufSize_ = nFrames;
-		buffer_.reserve(bufSize_);
-		buffer_.assign(bufSize_,NULL);
+		temp_ = new int[5];
+		for(int i = 0;i<5;i++)
+			temp_[i] = i;
+		//buffer_.reserve(bufSize_);
+		//buffer_.assign(bufSize_,NULL);
 		bufPtr_ = buffer_.begin();
 		
-		CvSize s;
-		s.width = (int)cvGetCaptureProperty(inDevice_,CV_CAP_PROP_FRAME_WIDTH);
-		s.height = (int)cvGetCaptureProperty(inDevice_,CV_CAP_PROP_FRAME_HEIGHT);
+		cv::Size s;
+		s.width = (int)dev.get(CV_CAP_PROP_FRAME_WIDTH);
+		s.height = (int)dev.get(CV_CAP_PROP_FRAME_HEIGHT);
 	}
 
 	~FrameReader()
 	{
+		delete temp_;
 		buffer_.clear();
 	}
 	void readFrame();
-	IplImage* getLastFrame() const;
+	cv::Mat& getLastFrame();
 	ImBuffer::const_iterator getFrameItr() const;
 };
 
