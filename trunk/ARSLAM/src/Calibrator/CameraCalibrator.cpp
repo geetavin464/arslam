@@ -70,13 +70,13 @@ void CameraCalibrator::calibrate(int bw, int bh)
 		{
 			
 			cv::cvtColor(img,grayImg,CV_BGR2GRAY,1);
-#ifdef _DEBUG_MODE_
+//#ifdef _DEBUG_MODE_
 			std::string name = "image";
 			char c = '0' + success;
 			name += c;
 			name += ".png";
 			imwrite(name,img);
-#endif //_DEBUG_MODE_
+//#endif //_DEBUG_MODE_
 			// finds accurately the corners
 			cv::cornerSubPix(grayImg,cornersIm,cv::Size(5,5),cv::Size(-1,-1),
 				cv::TermCriteria(cv::TermCriteria::MAX_ITER+cv::TermCriteria::EPS,30,0.1));//specifies the termination criteria
