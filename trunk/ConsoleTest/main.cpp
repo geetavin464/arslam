@@ -2,9 +2,11 @@
 #include "ImageCollector/FrameReader.h"
 #include "Calibrator/CameraCalibrator.h"
 #include <iostream>
-#include <string>
 #include <exception>
 #include <conio.h>
+#include <arslam.hpp>
+
+
 #pragma comment(lib,"ARSLAM.lib")
 
 using namespace std;
