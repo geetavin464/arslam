@@ -1,31 +1,25 @@
 #include "ImageCollector/FrameReader.h"
 #include <iostream>
+#include <exception>
 
 void FrameReader::readFrame()
 {
-	IplImage* temp = cvQueryFrame(inDevice_);
-	if(NULL == temp)
-	{// this doesn't help here. last grabbed frame is returned
-		// think of another way of dealing with this
+	//IplImage temp = cvQueryFrame(inDevice_);
+	cv::Mat temp;
+	if(!inDevice_.isOpened())
+	{
 		// ideally throw an exception here
 		assert(0 && "I am Blind!!!! Capture Device Not Available!");
 	}
-	if(bufPtr_!=buffer_.begin())
-	{
-		bufPtr_++;
-	}
-	if(bufPtr_ == buffer_.end())
-		bufPtr_ = buffer_.begin();
-
-	if(*bufPtr_ != NULL)
-		cvReleaseImage(&(*bufPtr_));
-
-	*bufPtr_ = cvCloneImage(temp);
+	inDevice_ >> temp;
+	buffer_.push_back(temp);
+	if(buffer_.size() > bufSize_)
+		buffer_.pop_front();
 }
 
-IplImage* FrameReader::getLastFrame() const
+cv::Mat& FrameReader::getLastFrame()
 {	
-	return (*bufPtr_);
+	return buffer_.back();
 }
 
 FrameReader::ImBuffer::const_iterator FrameReader::getFrameItr()const 
